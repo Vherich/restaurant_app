@@ -1,10 +1,25 @@
-# SQLite. Versions 3.8.0 and up are supported.
-#   gem install sqlite3
-#
-#   Ensure the SQLite 3 gem is defined in your Gemfile
-#   gem "sqlite3"
-#
-production:
+
+default: &default
   adapter: postgresql
   encoding: unicode
+  # For increased performance
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
+
+development:
+  <<: *default
+  database: restaurant_app_development
+  username: restaurant_app
+  password: restaurant_app
+  host: localhost
+
+test:
+  <<: *default
+  database: restaurant_app_test
+  username: restaurant_app
+  password: restaurant_app
+  host: localhost
+
+production:
+  <<: *default
+  url: <%= ENV['DATABASE_URL'] %>
