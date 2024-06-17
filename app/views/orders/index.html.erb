@@ -1,0 +1,97 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center">
+    <h1>Current Order Queue</h1>
+
+    <%= link_to 'Create Order', new_order_path, class: 'btn btn-primary' %>
+  </div>
+
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Table Number</th>
+        <th>Status</th>
+        <th>Created At</th>
+        <th>Total</th>
+        <th>Order Items</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @current_orders.each do |order| %>
+        <tr>
+          <td><%= order.id %></td>
+          <td><%= order.table.number %></td>
+          <td>
+            <span class="badge bg-<%= order.status_badge_class %>">
+              <%= order.status.capitalize %>
+            </span>
+          </td>
+          <td><%= order.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+          <td><%= number_to_currency(order.total) %></td>
+          <td>
+            <ul>
+              <% order.order_items.each do |order_item| %>
+                <li><%= order_item.menu_item.name %> (<%= order_item.quantity %>)</li>
+              <% end %>
+            </ul>
+          </td>
+          <td>
+            <% if order.status == 'pending' %>
+              <%= button_to 'Mark as Ready', order_path(order, status: 'ready'), method: :patch, class: 'btn btn-primary btn-sm' %>
+            <% elsif order.status == 'ready' %>
+              <%= button_to 'Mark as Completed', order_path(order, status: 'completed'), method: :patch, class: 'btn btn-success btn-sm' %>
+            <% end %>
+            <%= button_to 'Cancel Order', order_path(order), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-sm' %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <% if @current_orders.empty? %>
+    <p class="text-center">No current orders.</p>
+  <% end %>
+</div>
+
+<div class="container mt-4">
+  <h1>Completed Orders</h1>
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Table Number</th>
+        <th>Status</th>
+        <th>Completed At</th>
+        <th>Total</th>
+        <th>Order Items</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @completed_orders.each do |order| %>
+        <tr>
+          <td><%= order.id %></td>
+          <td><%= order.table.number %></td>
+          <td>
+            <span class="badge bg-<%= order.status_badge_class %>">
+              <%= order.status.capitalize %>
+            </span>
+          </td>
+          <td><%= order.updated_at.strftime("%Y-%m-%d %H:%M") %></td>
+          <td><%= number_to_currency(order.total) %></td>
+          <td>
+            <ul>
+              <% order.order_items.each do |order_item| %>
+                <li><%= order_item.menu_item.name %> (<%= order_item.quantity %>)</li>
+              <% end %>
+            </ul>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <% if @completed_orders.empty? %>
+    <p class="text-center">No completed orders.</p>
+  <% end %>
+</div>

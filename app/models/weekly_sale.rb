@@ -1,0 +1,2 @@
+class WeeklySale < ApplicationRecord
+end

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+
+      <%= link_to root_path, class: "navbar-brand" do %>
+        <%= image_tag "logo.jpg", alt: "Restaurant Logo", class: "d-inline-block align-text-top img-fluid", style: "width: 180px; height: 100px;" %>
+      <% end %>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <%= link_to "Menu", menu_items_path, class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Orders", orders_path, class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Weekly Sales", weekly_sales_path, class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Tables", tables_path, class: "nav-link" %>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </nav>
+  <head>
+    <title>RestaurantPos</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag 'bootstrap', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <%= yield %>
+  </body>
+</html>

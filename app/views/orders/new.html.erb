@@ -1,0 +1,47 @@
+<div class="container mt-4" data-controller="orders">
+  <h1>Create New Order</h1>
+
+  <%= form_with(model: @order, id: 'new_order_form') do |form| %>
+    <div class="mb-3">
+      <%= form.label :table_id, "Table", class: "form-label" %>
+      <%= form.select :table_id, @tables.map { |table| [table.number, table.id] }, { include_blank: "Select Table" }, class: "form-select" %>
+    </div>
+
+
+    <template data-orders-target="menuItemsTemplate">
+      <%= form.fields_for :order_items, OrderItem.new, child_index: 'NEW_RECORD' do |order_item| %>
+        <div class="order-item mb-3" data-orders-target="orderItem">
+          <div class="row">
+            <div class="col-md-6">
+              <%= order_item.collection_select :menu_item_id, @menu_items, :id, :name, { prompt: "Select Item" }, class: "form-select item-name", data: { action: "orders#updateItemPrice" } %>
+            </div>
+            <div class="col-md-2">
+              <%= order_item.number_field :quantity, value: 1, min: 1, class: "form-control item-quantity", data: { action: "input->orders#updateTotal" } %>
+            </div>
+            <div class="col-md-3 item-price" data-price="0">
+              Price: R$0.00
+            </div>
+            <div class="col-md-1">
+              <button type="button" class="btn btn-danger btn-sm" data-action="click->orders#removeItem">Remove</button>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </template>
+
+
+    <div id="order_items" data-orders-target="orderItems">
+    </div>
+
+
+    <div class="mb-3">
+      <button type="button" class="btn btn-secondary" data-action="click->orders#addItem">Add Item</button>
+    </div>
+
+    <div id="total_price" class="text-end mb-3" data-orders-target="totalPrice">
+      Total: R$0.00
+    </div>
+
+    <%= form.submit "Create Order", class: "btn btn-primary" %>
+  <% end %>
+</div>

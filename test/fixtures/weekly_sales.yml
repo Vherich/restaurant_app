@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  total_sales: 9.99
+  week_start: 2024-06-14
+
+two:
+  total_sales: 9.99
+  week_start: 2024-06-14
