@@ -75,3 +75,4 @@ gem 'pg'
 group :development, :test do
   gem 'pg'
 end
+gem 'cocoon'

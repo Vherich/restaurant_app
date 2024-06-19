@@ -10,15 +10,29 @@ class OrdersController < ApplicationController
 
   def new
     @order = Order.new
+    @menu_items = MenuItem.where(availability: true)
+    @tables = Table.all
+  end
+
+  def total
+    self.total = order_items.sum { |item| item.menu_item.price * item.quantity }
+    save!
   end
 
   def create
     @order = Order.new(order_params)
-
     if @order.save
-      redirect_to orders_path, notice: 'Order created successfully.'
+      Order.transaction do
+        valid_order_items_attributes = order_params[:order_items_attributes].select { |_, item| item[:quantity].to_i > 0 }
+        valid_order_items_attributes.each do |_, item_params|
+          @order.order_items.build(item_params.permit(:menu_item_id, :quantity))
+        end
+      end # End the transaction here
+      redirect_to orders_path, notice: 'Order was successfully created.'
     else
-      render :new, status: :unprocessable_entity  # Use 422 status for invalid form submissions
+      @menu_items = MenuItem.where(availability: true)
+      @tables = Table.all
+      render :new, status: :unprocessable_entity
     end
   end
 
@@ -26,7 +40,7 @@ class OrdersController < ApplicationController
     if @order.update(status: params[:status])
       redirect_to orders_path, notice: 'Order status updated.'
     else
-      redirect_to orders_path, alert: 'Order status update failed.'  # Add error handling for updates
+      redirect_to orders_path, alert: 'Order status update failed.'
     end
   end
 
@@ -51,6 +65,6 @@ class OrdersController < ApplicationController
   end
 
   def order_params
-    params.require(:order).permit(:status, :table_id)  # Exclude total, which should be calculated
+    params.require(:order).permit(:table_id, :other_permitted_params, order_items_attributes: [:menu_item_id, :quantity])
   end
 end

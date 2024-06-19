@@ -2,7 +2,11 @@ class MenuItemsController < ApplicationController
   before_action :set_menu_item, only: %i[edit update destroy]
 
   def index
-    @menu_items = MenuItem.all
+    @menu_items = MenuItem.all # Fetch all menu items
+    respond_to do |format|
+      format.html # You might not need this if you're only using JSON
+      format.json { render json: @menu_items }
+    end
   end
 
   def new
@@ -37,19 +41,12 @@ class MenuItemsController < ApplicationController
 
   private
 
-  def set_menu_item
-    @menu_item = MenuItem.find(params[:id])
-  rescue ActiveRecord::RecordNotFound
-    redirect_to menu_items_path, alert: 'Menu item not found.'
-  end
-
   def menu_item_params
     params.require(:menu_item).permit(
       :name,
       :price,
       :description,
       :availability,
-      :category # Assuming you have a category field
     )
   end
 end

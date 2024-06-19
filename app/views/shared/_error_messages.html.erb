@@ -1,0 +1,5 @@
+<% if object.errors.any? && object.errors[field].present? %>
+  <div class="invalid-feedback">
+    <%= object.errors[field].join(", ") %>
+  </div>
+<% end %>
