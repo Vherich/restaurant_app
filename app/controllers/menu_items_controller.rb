@@ -2,10 +2,10 @@ class MenuItemsController < ApplicationController
   before_action :set_menu_item, only: %i[edit update destroy]
 
   def index
-    @menu_items = MenuItem.all # Fetch all menu items
-    respond_to do |format|
-      format.html # You might not need this if you're only using JSON
-      format.json { render json: @menu_items }
+    if params[:query].present?
+      @menu_items = MenuItem.where("name ILIKE ?", "%#{params[:query]}%")
+    else
+      @menu_items = MenuItem.all.order(:name)
     end
   end
 
@@ -48,5 +48,9 @@ class MenuItemsController < ApplicationController
       :description,
       :availability,
     )
+  end
+
+  def set_menu_item
+    @menu_item = MenuItem.find(params[:id])
   end
 end

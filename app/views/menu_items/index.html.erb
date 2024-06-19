@@ -1,28 +1,30 @@
 <div class="container mt-4">
-  <h1>Menu Items</h1>
-
-  <div class="mb-3">
+  <h1 class="display-6">Menu Items</h1>
+  <div class="mb-3 d-flex justify-content-between align-items-center">
     <%= link_to 'Add New Item', new_menu_item_path, class: 'btn btn-primary' %>
+    <%= form_with(url: menu_items_path, method: :get, class: "d-flex", local: true) do |f| %>
+      <%= f.search_field :query, value: params[:query], placeholder: "Search", class: "form-control me-2" %>
+      <%= f.submit "Search", class: "btn btn-outline-success" %>
+    <% end %>
   </div>
 
-  <table class="table table-striped">
-    <thead>
+  <table class="table table-hover table-bordered align-middle">
+    <thead class="table-light">
       <tr>
         <th>Name</th>
-        <th>Price</th>
+        <th class="text-end">Price</th>
         <th>Description</th>
-        <th>Actions</th>
+        <th class="text-center">Actions</th>
       </tr>
     </thead>
     <tbody>
       <% @menu_items.each do |menu_item| %>
         <tr>
           <td><%= menu_item.name %></td>
-          <td><%= number_to_currency(menu_item.price) %></td>
+          <td class="text-end"><%= number_to_currency(menu_item.price) %></td>
           <td><%= menu_item.description %></td>
-          <td>
-            <%= link_to 'Edit', edit_menu_item_path(menu_item), class: 'btn btn-sm btn-outline-secondary' %>
-
+          <td class="text-center">
+            <%= link_to 'Edit', edit_menu_item_path(menu_item), class: 'btn btn-sm btn-outline-secondary me-2' %>
             <%= button_to 'Remove', menu_item_path(menu_item), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-sm btn-outline-danger' %>
           </td>
         </tr>

@@ -1,6 +1,5 @@
 <div class="container mt-4">
   <h1>Tables</h1>
-
   <div class="mb-3">
     <%= link_to 'Add New Table', new_table_path, class: 'btn btn-primary' %>
   </div>
@@ -13,12 +12,18 @@
       </tr>
     </thead>
     <tbody>
-      <% @tables.each do |table| %>
+      <% if @tables.present? %>
+        <% @tables.each do |table| %>
+          <tr>
+            <td><%= table.number %></td>
+            <td>
+              <%= button_to 'Remove', table, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-sm btn-danger', authenticity_token: true %>
+            </td>
+          </tr>
+        <% end %>
+      <% else %>
         <tr>
-          <td><%= table.number %></td>
-          <td>
-            <%= button_to 'Remove', table, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-sm btn-danger' %>
-          </td>
+          <td colspan="3" class="text-center">No tables found</td>
         </tr>
       <% end %>
     </tbody>
