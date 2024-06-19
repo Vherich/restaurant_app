@@ -7,6 +7,10 @@ class MenuItemsController < ApplicationController
     else
       @menu_items = MenuItem.all.order(:name)
     end
+    respond_to do |format|
+      format.html # You might not need this if you're only using JSON
+      format.json { render json: @menu_items }
+    end
   end
 
   def new

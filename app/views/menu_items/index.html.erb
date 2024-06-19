@@ -14,6 +14,7 @@
         <th>Name</th>
         <th class="text-end">Price</th>
         <th>Description</th>
+        <th class="text-center">Availability</th> <%# New column for availability %>
         <th class="text-center">Actions</th>
       </tr>
     </thead>
@@ -23,6 +24,13 @@
           <td><%= menu_item.name %></td>
           <td class="text-end"><%= number_to_currency(menu_item.price) %></td>
           <td><%= menu_item.description %></td>
+          <td class="text-center">
+            <% if menu_item.availability %>
+              <span class="badge rounded-pill bg-success">Available</span>
+            <% else %>
+              <span class="badge rounded-pill bg-danger">Unavailable</span>
+            <% end %>
+          </td>
           <td class="text-center">
             <%= link_to 'Edit', edit_menu_item_path(menu_item), class: 'btn btn-sm btn-outline-secondary me-2' %>
             <%= button_to 'Remove', menu_item_path(menu_item), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-sm btn-outline-danger' %>

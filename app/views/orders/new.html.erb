@@ -16,12 +16,23 @@
         <div class="card mb-3">
           <div class="card-body">
             <h6 class="card-title"><%= item.name %> - <%= number_to_currency(item.price) %></h6>
-            <%= form.fields_for :order_items, OrderItem.new do |order_item_form| %>
-              <%= order_item_form.hidden_field :menu_item_id, value: item.id %>
-              <div class="input-group">
-                <span class="input-group-text">Qty:</span>
-                <%= order_item_form.number_field :quantity, min: 0, value: 0, class: 'form-control' %>
-              </div>
+
+            <% if @order.order_items.find_by(menu_item_id: item.id) %>
+              <%= form.fields_for :order_items, @order.order_items.find_by(menu_item_id: item.id) do |order_item_form| %>
+                <%= order_item_form.hidden_field :menu_item_id, value: item.id %>
+                <div class="input-group">
+                  <span class="input-group-text">Qty:</span>
+                  <%= order_item_form.number_field :quantity, min: 0, class: 'form-control' %>
+                </div>
+              <% end %>
+            <% else %>
+              <%= form.fields_for :order_items, OrderItem.new(menu_item_id: item.id, quantity: 0) do |order_item_form| %>
+                <%= order_item_form.hidden_field :menu_item_id, value: item.id %>
+                <div class="input-group">
+                  <span class="input-group-text">Qty:</span>
+                  <%= order_item_form.number_field :quantity, min: 0, class: 'form-control' %>
+                </div>
+              <% end %>
             <% end %>
           </div>
         </div>
@@ -31,6 +42,5 @@
     <div class="col-12 d-grid gap-2">
       <%= form.submit "Create Order", class: 'btn btn-primary' %>
     </div>
-
-  <% end %>
+  <% end %> <%# This is the closing tag for the form_with block %>
 </div>
