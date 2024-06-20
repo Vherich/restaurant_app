@@ -1,34 +1,34 @@
 <div class="container mt-4">
-  <h1 class="display-6">Edit Menu Item</h1>
+  <h1 class="display-6">Editar Item do Cardápio</h1>
 
   <%= form_with(model: @menu_item, local: true, class: "row g-3") do |f| %>
     <div class="col-md-6">
-      <%= f.label :name, class: "form-label" %>
-      <%= f.text_field :name, class: "form-control", required: true %>
+        <%= f.label :name, "Nome", class: "form-label" %>
+        <%= f.text_field :name, class: "form-control", required: true %>
     </div>
 
     <div class="col-md-6">
-      <%= f.label :price, class: "form-label" %>
-      <%= f.number_field :price, step: 0.01, min: 0, class: "form-control", required: true %>
+        <%= f.label :price, "Preço (Apenas número. Ex: 4,50 )", class: "form-label" %>
+        <%= f.number_field :price, step: 0.01, min: 0, class: "form-control", required: true %>
     </div>
 
     <div class="col-12">
-      <%= f.label :description, class: "form-label" %>
-      <%= f.text_area :description, class: "form-control", rows: 3 %>
+        <%= f.label :description, "Descrição", class: "form-label" %>
+        <%= f.text_area :description, class: "form-control", rows: 3 %>
     </div>
 
     <div class="col-12">
-      <div class="form-check form-switch">
-        <%= f.check_box :availability, class: "form-check-input" %>
-        <%= f.label :availability, "Available", class: "form-check-label" %>
-      </div>
+        <div class="form-check form-switch">
+            <%= f.check_box :availability, class: "form-check-input" %>
+            <%= f.label :availability, "Disponível", class: "form-check-label" %>
+        </div>
     </div>
 
     <div class="col-12">
-      <div class="d-flex justify-content-between">
-        <%= link_to 'Cancel', menu_items_path, class: 'btn btn-secondary' %>
-        <%= f.submit "Update Menu Item", class: "btn btn-primary" %>
-      </div>
+        <div class="d-flex justify-content-between">
+            <%= link_to 'Cancelar', menu_items_path, class: 'btn btn-secondary' %>
+            <%= f.submit "Atualizar Item do Cardápio", class: "btn btn-primary" %>
+        </div>
     </div>
-  <% end %>
+<% end %>
 </div>

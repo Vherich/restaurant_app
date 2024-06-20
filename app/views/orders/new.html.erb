@@ -1,14 +1,14 @@
 <div class="container mt-4">
-  <h1 class="mb-3">New Order</h1>
+  <h1 class="mb-3">Novo Pedido</h1>
 
   <%= form_with(model: @order, class: 'row g-3') do |form| %>
     <div class="col-md-6">
-      <%= form.label :table_id, "Table", class: 'form-label' %>
+      <%= form.label :table_id, "Mesa", class: 'form-label' %>
       <%= form.collection_select :table_id, @tables, :id, :number, {}, class: 'form-select' %>
     </div>
 
     <div class="col-12">
-      <h5 class="mt-3">Menu Items:</h5>
+      <h5 class="mt-3">Itens do Cardápio:</h5>
     </div>
 
     <% @menu_items.each do |item| %>
@@ -40,7 +40,7 @@
     <% end %>
 
     <div class="col-12 d-grid gap-2">
-      <%= form.submit "Create Order", class: 'btn btn-primary' %>
+      <%= form.submit "Criar Pedido", class: 'btn btn-primary' %>
     </div>
-  <% end %> <%# This is the closing tag for the form_with block %>
+  <% end %>
 </div>

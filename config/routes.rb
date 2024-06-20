@@ -7,6 +7,9 @@ Rails.application.routes.draw do
     end
   end
   resources :tables
+  resources :orders do
+    resources :order_items, only: [:destroy]
+  end
 
   root 'orders#index'
 end

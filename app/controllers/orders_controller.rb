@@ -14,6 +14,13 @@ class OrdersController < ApplicationController
     @tables = Table.all
   end
 
+  def edit
+    @order = Order.find(params[:id])
+
+    # Para carregar os dados dos itens do menu no formulário
+    @menu_items = MenuItem.where(availability: true)
+  end
+
   def total
     self.total = order_items.sum { |item| item.menu_item.price * item.quantity }
     save!
@@ -37,10 +44,13 @@ class OrdersController < ApplicationController
   end
 
   def update
-    if @order.update(status: params[:status])
-      redirect_to orders_path, notice: 'Order status updated.'
+    @order = Order.find(params[:id])
+
+    if @order.update(order_params)
+      redirect_to orders_path, notice: "Pedido atualizado com sucesso!"
     else
-      redirect_to orders_path, alert: 'Order status update failed.'
+      @menu_items = MenuItem.where(availability: true)
+      render :edit
     end
   end
 
@@ -65,6 +75,11 @@ class OrdersController < ApplicationController
   end
 
   def order_params
-    params.require(:order).permit(:table_id, :other_permitted_params, order_items_attributes: [:menu_item_id, :quantity])
+    params.require(:order).permit(
+      :status,
+      :table_id,
+      order_items_attributes: [:id, :quantity, :menu_item_id, :_destroy]
+    )
   end
+
 end

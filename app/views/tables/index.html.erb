@@ -1,14 +1,14 @@
 <div class="container mt-4">
-  <h1>Tables</h1>
+  <h1>Mesas</h1>
   <div class="mb-3">
-    <%= link_to 'Add New Table', new_table_path, class: 'btn btn-primary' %>
+    <%= link_to 'Adicionar Mesa', new_table_path, class: 'btn btn-primary' %>
   </div>
 
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>Table Number</th>
-        <th>Actions</th>
+        <th>Número da Mesa</th>
+        <th>Ações</th>
       </tr>
     </thead>
     <tbody>
@@ -17,13 +17,13 @@
           <tr>
             <td><%= table.number %></td>
             <td>
-              <%= button_to 'Remove', table, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-sm btn-danger', authenticity_token: true %>
+              <%= button_to 'Remover', table, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-sm btn-danger', authenticity_token: true %>
             </td>
           </tr>
         <% end %>
       <% else %>
         <tr>
-          <td colspan="3" class="text-center">No tables found</td>
+          <td colspan="3" class="text-center">Mesas não encontradas</td>
         </tr>
       <% end %>
     </tbody>
