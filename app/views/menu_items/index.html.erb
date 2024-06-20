@@ -11,7 +11,7 @@
   <table class="table table-hover table-bordered align-middle">
     <thead class="table-light">
       <tr>
-        <th>Nome</th>
+        <th class="text-center">Nome</th>
         <th class="text-center">Preço</th>
         <th>Description</th>
         <th class="text-center">Disponibilidade</th> <%# New column for availability %>
@@ -21,7 +21,7 @@
     <tbody>
       <% @menu_items.each do |menu_item| %>
         <tr>
-          <td><%= menu_item.name %></td>
+          <td class="text-center"><%= menu_item.name %></td>
           <td class="text-center"><%= number_to_currency(menu_item.price) %></td>
           <td><%= menu_item.description %></td>
           <td class="text-center">
@@ -32,7 +32,7 @@
             <% end %>
           </td>
           <td class="text-center">
-            <%= link_to 'Editar', edit_menu_item_path(menu_item), class: 'btn btn-sm btn-outline-secondary me-2' %>
+            <%= link_to 'Editar', edit_menu_item_path(menu_item), class: 'btn btn-sm btn-outline-secondary my-2' %>
             <%= button_to 'Remover', menu_item_path(menu_item), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-sm btn-outline-danger' %>
           </td>
         </tr>
