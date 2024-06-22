@@ -4,3 +4,4 @@
 //= link_tree ../../../vendor/javascript .js
 //= link bootstrap/dist/css/bootstrap.css
 //= link bootstrap.min.js
+//= link bootstrap/dist/js/bootstrap.js

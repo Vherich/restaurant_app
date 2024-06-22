@@ -8,8 +8,6 @@
           <th>Item</th>
           <th>Quantidade</th>
           <th>Preço Unitário</th>
-          <th>Subtotal</th>
-          <th>Ações</th>
         </tr>
       </thead>
       <tbody>
@@ -19,10 +17,6 @@
               <td><%= order_item.menu_item.name %></td>
               <td><%= oi.number_field :quantity, min: 0, class: "form-control" %></td>
               <td><%= number_to_currency(order_item.menu_item.price) %></td>
-              <td><%= number_to_currency(order_item.subtotal) %></td>
-              <td>
-                <%= link_to "Remover", order_order_item_path(@order, order_item), method: :delete, data: { confirm: "Tem certeza?" }, class: "btn btn-danger btn-sm" %>
-              </td>
             </tr>
           <% end %>
         <% end %>

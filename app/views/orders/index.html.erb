@@ -1,7 +1,7 @@
 <div class="container mt-4">
+<div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center">
     <h1>Pedidos Atuais</h1>
-
     <%= link_to 'Criar Pedido', new_order_path, class: 'btn btn-primary' %>
   </div>
 
@@ -15,44 +15,63 @@
         <th>Total</th>
         <th>Itens do Pedido</th>
         <th>Ações</th>
+        <th>Quantia Paga Pelo Cliente</th>
       </tr>
     </thead>
     <tbody>
       <% @current_orders.each do |order| %>
         <tr>
           <% if order.order_items.any? { |item| item.quantity > 0 } %>
-          <td><%= order.id %></td>
-          <td><%= order.table.number %></td>
-          <td>
-            <span class="badge bg-<%= order.status_badge_class %>">
-              <%= order.status.capitalize %>
-            </span>
-          </td>
-          <td><%= order.created_at.strftime("%Y-%m-%d %H:%M") %></td>
-          <td><%= number_to_currency(order.total) %></td>
-          <td>
-            <ul>
-              <% order.order_items.each do |order_item| %>
-                <% if order_item.quantity > 0 %>
-                  <li><%= order_item.menu_item.name %> (<%= order_item.quantity %>)</li>
+            <td><%= order.id %></td>
+            <td><%= order.table.number %></td>
+            <td>
+              <span class="badge bg-<%= order.status_badge_class %>">
+                <%= order.status.capitalize %>
+              </span>
+            </td>
+            <td><%= order.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+            <td><%= number_to_currency(order.total) %></td>
+            <td>
+              <ul>
+                <% order.order_items.each do |order_item| %>
+                  <% if order_item.quantity > 0 %>
+                    <li><%= order_item.menu_item.name %> (<%= order_item.quantity %>)</li>
+                  <% end %>
                 <% end %>
+              </ul>
+            </td>
+            <td>
+              <% if order.status == 'pending' %>
+                <%= form_with(model: order, url: order_path(order), method: :patch) do |form| %>
+                  <%= form.hidden_field :status, value: 'ready' %>
+                  <%= form.submit 'Marcar como pronto', class: 'btn btn-primary btn-sm' %>
+                <% end %>
+              <% elsif order.status == 'ready' %>
               <% end %>
-            </ul>
-          </td>
-          <td>
-            <% if order.status == 'pending' %>
-              <%= button_to 'Marcar como pronto', order_path(order, status: 'ready'), method: :patch, class: 'btn btn-primary btn-sm' %>
-            <% elsif order.status == 'ready' %>
-              <%= button_to 'Marcar como completo', order_path(order, status: 'completed'), method: :patch, class: 'btn btn-success btn-sm' %>
-            <% end %>
-            <%= link_to 'Editar Pedido', edit_order_path(order), class: 'btn btn-secondary btn-sm my-2' %>
-            <%= button_to 'Cancelar Pedido', order_path(order), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-sm' %>
-          </td>
+              <%= link_to 'Editar Pedido', edit_order_path(order), class: 'btn btn-secondary btn-sm my-2' %>
+              <%= button_to 'Cancelar Pedido', order_path(order), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-sm' %>
+            </td>
+            <td>
+              <% if order.status == 'ready' %>
+                <div class="input-group">
+                  <%= form_with(model: order, url: order_path(order), method: :patch) do |form| %>
+                    <%= form.hidden_field :status, value: 'completed' %>
+                    <%= form.number_field :amount_paid, step: 0.01, min: order.total, value: "Quantia Paga", class: "form-control" %>
+                    <div class="input-group-append my-2">
+                      <%= form.submit 'Marcar como completo', class: 'btn btn-success' %>
+                    </div>
+                  <% end %>
+                </div>
+              <% elsif order.status == 'completed' && order.amount_paid.present? %>
+                <%= number_to_currency(order.calculate_change(order.amount_paid)) %>
+              <% end %>
+            </td>
+          <% end %>
         </tr>
-        <% end %>
       <% end %>
     </tbody>
   </table>
+
 
   <% if @current_orders.empty? %>
     <p class="text-center">Sem pedidos atualmente.</p>
@@ -70,6 +89,7 @@
         <th>Hora</th>
         <th>Total</th>
         <th>Itens do Pedido</th>
+        <th>Ações</th>
       </tr>
     </thead>
     <tbody>
@@ -93,6 +113,9 @@
                 <% end %>
               <% end %>
             </ul>
+          </td>
+          <td>
+          <%= link_to 'Editar Pedido', edit_order_path(order), class: 'btn btn-secondary btn-sm my-2' %>
           </td>
         </tr>
         <% end %>

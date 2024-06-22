@@ -1,0 +1,108 @@
+/* application.css */
+
+/* Import Bootstrap */
+@import "bootstrap";
+
+/*
+ * Variables (Customize these to match your brand)
+ */
+:root {
+  --primary-color: #007bff;        /* Primary blue */
+  --secondary-color: #6c757d;      /* Secondary gray */
+  --success-color: #28a745;       /* Success green */
+  --info-color: #17a2b8;          /* Info blue */
+  --warning-color: #ffc107;       /* Warning yellow */
+  --danger-color: #dc3545;        /* Danger red */
+}
+
+/*
+ * Body and Typography
+ */
+body {
+  font-family: "Helvetica Neue", Arial, sans-serif; /* Modern sans-serif font */
+  line-height: 1.6;
+  color: #333; /* Dark gray text for better readability */
+  background-color: #f8f9fa; /* Light background color */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600; /* Slightly bolder headings */
+}
+
+/*
+ * Links
+ */
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/*
+ * Buttons
+ */
+.btn {
+  border-radius: 0.25rem; /* Standard rounded corners */
+}
+
+/*
+ * Flash Messages (Alerts)
+ */
+.alert {
+  border-width: 2px;
+  font-weight: 500;
+  border-radius: 0.5rem; /* More pronounced rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  animation: fadeIn 0.3s ease-in-out;  /* Fade in effect */
+  max-width: 80%;
+  margin: 1rem auto; /* Center alerts */
+}
+
+.alert .btn-close {
+  background-color: transparent; /* Make the close button more subtle */
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.alert .btn-close:hover {
+  opacity: 1;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+  color: #155724;
+}
+
+.alert-info {
+  background-color: #cce5ff;
+  border-color: #b8daff;
+  color: #004085;
+}
+
+.alert-warning {
+  background-color: #fff3cd;
+  border-color: #ffeeba;
+  color: #856404;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+  color: #721c24;
+}
+
+/*
+ * Responsive Design
+ */
+@media (max-width: 768px) {
+  /* Styles for smaller screens */
+  .alert {
+    max-width: 95%;
+  }
+}
+
+/*
+* Your Custom Styles (Add more styles as needed)
+*/

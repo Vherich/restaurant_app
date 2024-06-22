@@ -19,6 +19,10 @@ class Order < ApplicationRecord
     order_items.sum { |item| item.menu_item.price * item.quantity }
   end
 
+  def calculate_change(amount_paid)
+    [0, amount_paid - total].max # Ensure change is never negative
+  end
+
   private
 
   def set_default_status
