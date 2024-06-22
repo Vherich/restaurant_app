@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   resources :orders do
     resources :order_items, only: [:destroy]
   end
-
+  get '/login', to: 'sessions#new', as: 'new_session'
+  post '/login', to: 'sessions#create', as: 'sessions'
   root 'orders#index'
 end

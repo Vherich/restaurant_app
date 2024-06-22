@@ -76,3 +76,4 @@ group :development, :test do
   gem 'pg'
 end
 gem 'cocoon'
+gem 'bcrypt', '~> 3.1.7'
