@@ -1,4 +1,9 @@
 {
+  "engines": {
+    "node": "20.9.0",
+    "yarn": "1.22.19"
+  },
+
   "dependencies": {
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.3"
