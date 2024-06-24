@@ -1,31 +1,25 @@
 <div class="container mt-4">
-  <h1>Mesas</h1>
-  <div class="mb-3">
-    <%= link_to 'Adicionar Mesa', new_table_path, class: 'btn btn-primary' %>
-  </div>
+  <section id="table-management">
+    <h1 class="mb-3">Mesas</h1>
 
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Número da Mesa</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% if @tables.present? %>
+    <div class="d-flex justify-content-between align-items-center">
+      <%= link_to 'Adicionar Mesa', new_table_path, class: 'btn btn-primary mb-4' %>
+    </div>
+
+    <% if @tables.any? %>
+      <div class="row">
         <% @tables.each do |table| %>
-          <tr>
-            <td><%= table.number %></td>
-            <td>
-              <%= button_to 'Remover', table, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-sm btn-danger', authenticity_token: true %>
-            </td>
-          </tr>
+          <div class="col-md-3 mb-4">
+            <%= link_to edit_table_path(table), class: 'text-decoration-none' do %>
+              <div class="table-square d-flex align-items-center justify-content-center">
+                <span class="table-number display-4"><%= table.number %></span>
+              </div>
+            <% end %>
+          </div>
         <% end %>
-      <% else %>
-        <tr>
-          <td colspan="3" class="text-center">Mesas não encontradas</td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+      </div>
+    <% else %>
+      <p class="text-center text-muted mt-3">Nenhuma mesa encontrada.</p>
+    <% end %>
+  </section>
 </div>

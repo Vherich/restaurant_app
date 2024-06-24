@@ -103,6 +103,34 @@ a:hover {
   }
 }
 
-/*
-* Your Custom Styles (Add more styles as needed)
-*/
+.table-square {
+  width: 180px;
+  height: 180px;
+  background-color: #f8f9fa;
+  border: 2px solid #dee2e6;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+  transition: all 0.3s ease; /* Smoother transition for all properties */
+}
+
+.table-square:hover {
+  background-color: #e2e6ea;
+  transform: translateY(-2px); /* Slight lift on hover */
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.table-number {
+  color: #343a40;
+  font-weight: 600; /* Slightly bolder text */
+}
+
+.table-square.not-clickable {
+  opacity: 0.5;
+  cursor: default; /* Prevent the cursor from changing to a pointer */
+}
+
+.table-square.not-clickable:hover {
+  background-color: #f8f9fa; /* Or whatever your original bg color is */
+  transform: none; /* Prevent the hover lift effect */
+  box-shadow: none; /* Remove any hover shadow */
+}

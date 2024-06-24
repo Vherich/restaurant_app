@@ -10,6 +10,9 @@ class TablesController < ApplicationController
   end
 
   def edit
+    @table = Table.find(params[:id])
+    @current_orders = @table.orders.where.not(status: 'completed')
+    @completed_orders = @table.orders.where(status: 'completed')
   end
 
   def create

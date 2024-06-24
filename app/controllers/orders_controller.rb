@@ -1,11 +1,17 @@
 class OrdersController < ApplicationController
-  before_action :set_order, only: %i[update destroy]
+  before_action :set_table, only: [:edit]
+  before_action :set_order, only: %i[update destroy edit] # Move set_order after set_table
   before_action :set_tables, only: %i[new create]
 
   def index
-    @orders = Order.all
-    @current_orders = Order.current
-    @completed_orders = Order.completed.includes(:order_items)
+    if params[:table_id]
+      @table = Table.find(params[:table_id]) # Get the table for filtering
+      @current_orders = @table.orders.where.not(status: 'completed')
+      @completed_orders = @table.orders.where(status: 'completed')
+    else
+      @current_orders = Order.where.not(status: 'completed')
+      @completed_orders = Order.where(status: 'completed')
+    end
   end
 
   def new
@@ -16,12 +22,8 @@ class OrdersController < ApplicationController
 
   def edit
     @order = Order.find(params[:id])
+    @table = @order.table
     @menu_items = MenuItem.where(availability: true).order(:name)
-  end
-
-  def total
-    self.total = order_items.sum { |item| item.menu_item.price * item.quantity }
-    save!
   end
 
   def create
@@ -42,17 +44,20 @@ class OrdersController < ApplicationController
   end
 
   def update
-    @order = Order.find(params[:id])
     if @order.update(order_params)
       if params[:order][:status] == "completed"
         @change = @order.calculate_change(params[:order][:amount_paid].to_f)
         flash[:notice] = "Pedido completado! Troco: #{@change}"
-        redirect_to orders_path
       else
-        redirect_to orders_path, notice: "Pedido atualizado com sucesso!"
+        flash[:notice] = "Pedido atualizado com sucesso!"
+      end
+
+      if params[:order][:table_id].present?
+        redirect_to table_orders_path(@order.table_id)  # Redirect to filtered orders if table_id is present
+      else
+        redirect_to orders_path
       end
     else
-      @menu_items = MenuItem.where(availability: true)
       render :edit
     end
   end
@@ -75,6 +80,13 @@ class OrdersController < ApplicationController
 
   def set_tables
     @tables = Table.all
+  end
+
+  def set_table
+    @order = Order.find(params[:id]) # Set @order before trying to use it
+    @table = @order.table
+  rescue ActiveRecord::RecordNotFound
+    redirect_to orders_path, alert: 'Order not found.'
   end
 
   def order_params
