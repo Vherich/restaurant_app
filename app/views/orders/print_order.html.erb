@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pedido #<%= @order.id %></title>
+  <style>
+    /* General Styling */
+    body {
+      font-family: 'Courier New', monospace; /* Fallback for browsers that don't support "Roboto Mono" */
+      font-family: 'Roboto Mono', monospace;
+      font-size: 12px; /* Adjust for optimal readability on your printer */
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 384px; /* Adjust to your printer width */
+      margin: 20px auto;
+    }
+
+    /* Header */
+    h1 {
+      font-size: 18px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .order-info {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+
+    tbody tr:nth-child(even) { /* Add alternating row color for visual separation */
+      background-color: #f9f9f9;
+    }
+
+    /* Footer */
+    .total {
+      text-align: right;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body onload="window.print()">
+  <div class="container">
+    <h1>Pedido #<%= @order.id %></h1>
+    <div class="order-info">
+      <p>Mesa: <%= @order.table.number %></p>
+      <p>Data: <%= @order.created_at.strftime("%Y-%m-%d %H:%M") %></p>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Quantidade</th>
+          <th>Preço Unitário</th> <%# Add header for unit price %>
+          <th>Preço Total</th>   <%# Add header for total price %>
+        </tr>
+      </thead>
+      <tbody>
+        <% @order.order_items.each do |item| %>
+          <% if item.quantity > 0 %>
+            <tr>
+              <td><%= item.menu_item.name %></td>
+              <td><%= item.quantity %></td>
+              <td><%= number_to_currency(item.menu_item.price) %></td> <%# Show unit price %>
+              <td><%= number_to_currency(item.menu_item.price * item.quantity) %></td> <%# Calculate and show total price for the item %>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+
+    <div class="total">
+      Total: <%= number_to_currency(@order.total) %>
+    </div>
+  </div>
+</body>
+</html>

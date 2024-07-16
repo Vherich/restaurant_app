@@ -17,6 +17,12 @@ Rails.application.routes.draw do
     resource :order
   end
 
+  resources :orders do
+    member do
+      post :print_order
+    end
+  end
+
   get '/login', to: 'sessions#new', as: 'new_session'
   post '/login', to: 'sessions#create', as: 'sessions'
   root 'orders#index'

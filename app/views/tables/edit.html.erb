@@ -8,6 +8,7 @@
         <tr>
           <th>ID</th>
           <th>Status</th>
+          <th>Local</th>
           <th>Hora</th>
           <th>Total</th>
           <th>Itens</th>
@@ -24,6 +25,7 @@
                   <%= order.status.capitalize %>
                 </span>
               </td>
+              <td><%= order.respond_to?(:formatted_order_type) ? order.formatted_order_type : (order.order_type&.humanize || "Presencial") %></td>
               <td><%= order.created_at.strftime("%Y-%m-%d %H:%M") %></td>
               <td><%= number_to_currency(order.total) %></td>
               <td>

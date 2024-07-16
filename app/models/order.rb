@@ -15,6 +15,14 @@ class Order < ApplicationRecord
   end
   before_create :set_default_status
 
+  def printed?
+    printed_at.present? # Check if printed_at has a value (meaning it's been printed)
+  end
+
+  def mark_as_printed
+    update(printed_at: Time.now)
+  end
+
   def total
     order_items.sum { |item| item.menu_item.price * item.quantity }
   end
@@ -22,6 +30,8 @@ class Order < ApplicationRecord
   def calculate_change(amount_paid)
     [0, amount_paid - total].max # Ensure change is never negative
   end
+
+  enum order_type: { presencial: 0, entrega: 1 }
 
   private
 

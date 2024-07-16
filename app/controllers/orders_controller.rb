@@ -16,6 +16,7 @@ class OrdersController < ApplicationController
 
   def new
     @order = Order.new
+    @order.order_type = :presencial if @order.order_type.nil?
     @menu_items = MenuItem.where(availability: true)
     @tables = Table.all
   end
@@ -40,6 +41,22 @@ class OrdersController < ApplicationController
       @menu_items = MenuItem.where(availability: true)
       @tables = Table.all
       render :new, status: :unprocessable_entity
+    end
+  end
+
+  def print_order
+    begin
+      @order = Order.find(params[:id])
+      @order.mark_as_printed
+
+      respond_to do |format|
+        format.html
+      end
+    rescue ActiveRecord::RecordNotFound
+      redirect_to orders_path, alert: 'Pedido não encontrado.'
+    rescue => e
+      logger.error("Error printing order: #{e.message}")
+      redirect_to orders_path, alert: 'Ocorreu um erro ao imprimir o pedido.'
     end
   end
 
@@ -93,6 +110,7 @@ class OrdersController < ApplicationController
     params.require(:order).permit(
       :status,
       :table_id,
+      :order_type,
       :amount_paid,
       order_items_attributes: [:id, :quantity, :menu_item_id, :_destroy]
     )
