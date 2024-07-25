@@ -33,6 +33,10 @@ class Order < ApplicationRecord
 
   enum order_type: { presencial: 0, entrega: 1 }
 
+  def formatted_order_type
+    order_type&.humanize || "Presencial"
+  end
+
   private
 
   def set_default_status

@@ -63,14 +63,20 @@ class OrdersController < ApplicationController
   def update
     if @order.update(order_params)
       if params[:order][:status] == "completed"
-        @change = @order.calculate_change(params[:order][:amount_paid].to_f)
-        flash[:notice] = "Pedido completado! Troco: #{@change}"
+        if params[:order][:amount_paid].present?
+          @change = @order.calculate_change(params[:order][:amount_paid].to_f)
+          flash[:notice] = "Pedido completado! Troco: #{@change}"
+        else
+          flash[:alert] = "Por favor, insira a quantia paga para calcular o troco."
+          # Redirect to the order's edit path if amount_paid is not entered.
+          return redirect_to edit_order_path(@order)
+        end
       else
         flash[:notice] = "Pedido atualizado com sucesso!"
       end
 
       if params[:order][:table_id].present?
-        redirect_to table_orders_path(@order.table_id)  # Redirect to filtered orders if table_id is present
+        redirect_to table_orders_path(@order.table_id)
       else
         redirect_to orders_path
       end

@@ -46,10 +46,14 @@
                     <% if order.status == 'pending' %>
                       <%= button_to 'Marcar como Pronto', order_path(order, order: { status: 'ready' }), method: :patch, class: 'btn btn-primary btn-sm' %>
                     <% elsif order.status == 'ready' %>
-                      <%= form_with(model: order, url: order_path(order), method: :patch, class: 'd-flex align-items-center') do |form| %>
-                        <%= form.hidden_field :status, value: 'completed' %>
-                        <%= form.number_field :amount_paid, step: 0.01, min: order.total, placeholder: 'Quantia Paga', class: 'form-control me-2' %>
-                        <%= form.submit 'Completo', class: 'btn btn-success btn-sm' %>
+                      <%= form_with(model: order, url: order_path(order), method: :patch, class: 'd-flex align-items-center', data: {order_id: order.id}) do |form| %>
+                        <input type="hidden" name="order[amount_paid]" value="" />
+                        <input type="hidden" name="order[status]" value="" />
+                        <button type="button" class="btn btn-success btn-sm"
+                                data-bs-toggle="modal" data-bs-target="#changeModal"
+                                data-order-total="<%= order.total %>" data-order-id="<%= order.id %>">
+                          Completo & Calcular Troco
+                        </button>
                       <% end %>
                     <% end %>
                     <%= link_to 'Editar Pedido', edit_order_path(order), class: 'btn btn-secondary btn-sm my-2' %>
@@ -67,7 +71,6 @@
       <p class="text-center text-muted">Sem pedidos atuais.</p>
     <% end %>
   </section>
-
 
   <%# Completed Orders Section %>
   <section id="completed-orders" class="mt-5">
@@ -126,5 +129,78 @@
       <p class="text-center text-muted">Sem pedidos completos.</p>
     <% end %>
   </section>
-
 </div>
+
+<%# Modal %>
+<div id="changeModal" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Calcular  
+ Troco</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">  
+
+          <label for="amountPaid" class="form-label">Quantia Paga:</label>
+          <input type="number" step="0.01" min="0" id="amountPaid" class="form-control" />
+        </div>
+        <div id="changeResult"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        <button type="button"  
+ id="confirmPayment" class="btn btn-primary">Confirmar Pagamento</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const changeModal = document.getElementById("changeModal");
+    const amountPaidInput = document.getElementById("amountPaid");
+    const changeResult = document.getElementById("changeResult");
+    const confirmPaymentButton  
+ = document.getElementById("confirmPayment");
+
+    let currentOrder = null; // Variable to store the current order
+
+    changeModal.addEventListener("shown.bs.modal", function (event) {
+      const button = event.relatedTarget;
+      const orderTotal = parseFloat(button.dataset.orderTotal);
+      currentOrder = button; // Store the button element itself
+
+      amountPaidInput.min = orderTotal; // Set minimum amount
+
+      amountPaidInput.addEventListener("input", function () {
+        const amountPaid = parseFloat(this.value) || 0;
+        const change = amountPaid - orderTotal;
+
+        changeResult.textContent = change >= 0
+          ? `Troco: ${change.toFixed(2)}`
+          : "A quantia paga é menor que o total do pedido.";
+      });
+    });
+
+    confirmPaymentButton.addEventListener("click", function () {
+      const amountPaid = parseFloat(amountPaidInput.value);
+      const orderTotal = parseFloat(currentOrder.dataset.orderTotal); // Fetch order total from the button element
+
+      if (amountPaid >= orderTotal) {
+        // Submit the form using a regular form submission
+        const form = document.querySelector(`form[data-order-id="${currentOrder.dataset.orderId}"]`);
+        const amountPaidInput = form.querySelector('input[name="order[amount_paid]"]');
+        const statusInput = form.querySelector('input[name="order[status]"]');
+
+        amountPaidInput.value = amountPaid;
+        statusInput.value = 'completed';
+
+        form.submit();
+      } else {
+        changeResult.textContent = "A quantia paga é menor que o total do pedido.";
+      }
+    });
+  });
+</script>
