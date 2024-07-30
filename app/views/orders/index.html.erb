@@ -15,6 +15,7 @@
               <th>Status</th>
               <th>Hora</th>
               <th>Total</th>
+              <th>Observações</th> <%# New column for observations %>
               <th>Itens</th>
               <th colspan="2">Ações</th>
             </tr>
@@ -33,6 +34,7 @@
                   </td>
                   <td><%= order.created_at.strftime("%Y-%m-%d %H:%M") %></td>
                   <td><%= number_to_currency(order.total) %></td>
+                  <td><%= order.observations %></td> <%# Display observations %>
                   <td>
                     <ul class="list-unstyled">
                       <% order.order_items.each do |order_item| %>
@@ -86,6 +88,7 @@
               <th>Status</th>
               <th>Hora Finalização</th>
               <th>Total</th>
+              <th>Observações</th>
               <th>Itens</th>
               <th>Ações</th>
             </tr>
@@ -103,6 +106,7 @@
                   </td>
                   <td><%= order.updated_at.strftime("%Y-%m-%d %H:%M") %></td>
                   <td><%= number_to_currency(order.total) %></td>
+                  <td><%= order.observations %></td> <%# Display observations %>
                   <td>
                     <ul class="list-unstyled">
                       <% order.order_items.each do |order_item| %>

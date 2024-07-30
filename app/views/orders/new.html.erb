@@ -12,6 +12,11 @@
       <%= form.select :order_type, Order.order_types.keys.map { |type| [type.humanize, type] }, {}, class: 'form-select' %>
     </div>
 
+    <div class="col-12"> <%# New row for the observations field %>
+      <%= form.label :observations, "Observações", class: 'form-label' %>
+      <%= form.text_area :observations, rows: 3, class: 'form-control' %>
+    </div>
+
     <div class="col-12">
       <h5 class="mt-3">Itens do Cardápio:</h5>
     </div>

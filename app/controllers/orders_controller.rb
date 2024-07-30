@@ -118,6 +118,7 @@ class OrdersController < ApplicationController
       :table_id,
       :order_type,
       :amount_paid,
+      :observations,
       order_items_attributes: [:id, :quantity, :menu_item_id, :_destroy]
     )
   end
