@@ -30,12 +30,12 @@ class OrdersController < ApplicationController
   def create
     @order = Order.new(order_params)
     if @order.save
-      Order.transaction do
+      Order.transaction do # Wrap in transaction
         valid_order_items_attributes = order_params[:order_items_attributes].select { |_, item| item[:quantity].to_i > 0 }
         valid_order_items_attributes.each do |_, item_params|
           @order.order_items.build(item_params.permit(:menu_item_id, :quantity))
         end
-      end # End the transaction here
+      end
       redirect_to orders_path, notice: 'Order was successfully created.'
     else
       @menu_items = MenuItem.where(availability: true)
@@ -68,21 +68,16 @@ class OrdersController < ApplicationController
           flash[:notice] = "Pedido completado! Troco: #{@change}"
         else
           flash[:alert] = "Por favor, insira a quantia paga para calcular o troco."
-          # Redirect to the order's edit path if amount_paid is not entered.
           return redirect_to edit_order_path(@order)
         end
       else
         flash[:notice] = "Pedido atualizado com sucesso!"
       end
-
-      if params[:order][:table_id].present?
-        redirect_to table_orders_path(@order.table_id)
-      else
-        redirect_to orders_path
-      end
     else
       render :edit
     end
+    # redirect logic simplified
+    redirect_to params[:order][:table_id].present? ? table_orders_path(@order.table_id) : orders_path
   end
 
   def destroy
