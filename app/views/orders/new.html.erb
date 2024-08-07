@@ -1,6 +1,5 @@
 <div class="container mt-4">
-  <h1 class="mb-3">Novo Pedido</h1>
-
+  <h1>Novo Pedido</h1>
   <%= form_with(model: @order, class: 'row g-3') do |form| %>
     <div class="col-md-6">
       <%= form.label :table_id, "Mesa", class: 'form-label' %>
@@ -12,7 +11,7 @@
       <%= form.select :order_type, Order.order_types.keys.map { |type| [type.humanize, type] }, {}, class: 'form-select' %>
     </div>
 
-    <div class="col-12"> <%# New row for the observations field %>
+    <div class="col-12">
       <%= form.label :observations, "Observações", class: 'form-label' %>
       <%= form.text_area :observations, rows: 3, class: 'form-control' %>
     </div>
@@ -21,21 +20,12 @@
       <h5 class="mt-3">Itens do Cardápio:</h5>
     </div>
 
-    <% @menu_items.each do |item| %>
-      <div class="col-md-4">
-        <div class="card mb-3">
-          <div class="card-body">
-            <h6 class="card-title"><%= item.name %> - <%= number_to_currency(item.price) %></h6>
-
-            <% if @order.order_items.find_by(menu_item_id: item.id) %>
-              <%= form.fields_for :order_items, @order.order_items.find_by(menu_item_id: item.id) do |order_item_form| %>
-                <%= order_item_form.hidden_field :menu_item_id, value: item.id %>
-                <div class="input-group">
-                  <span class="input-group-text">Qty:</span>
-                  <%= order_item_form.number_field :quantity, min: 0, class: 'form-control' %>
-                </div>
-              <% end %>
-            <% else %>
+    <div class="menu-items-container">
+      <% @menu_items.each do |item| %>
+        <div class="col-md-4">
+          <div class="card mb-3">
+            <div class="card-body">
+              <h6 class="card-title"><%= item.name %> - <%= number_to_currency(item.price) %></h6>
               <%= form.fields_for :order_items, OrderItem.new(menu_item_id: item.id, quantity: 0) do |order_item_form| %>
                 <%= order_item_form.hidden_field :menu_item_id, value: item.id %>
                 <div class="input-group">
@@ -43,14 +33,60 @@
                   <%= order_item_form.number_field :quantity, min: 0, class: 'form-control' %>
                 </div>
               <% end %>
-            <% end %>
+            </div>
           </div>
         </div>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
+
+    <div class="col-12">
+      <h5 class="mt-3">Pratos por Quilo (Opcional):</h5>
+    </div>
+
+    <div id="prato-por-quilo-container">
+      <%= form.fields_for :dishes, @order.dishes.select { |dish| dish.dish_type == 'prato_por_quilo' } do |dish_form| %>
+        <div class="input-group prato-por-quilo-input">
+          <span class="input-group-text">R$</span>
+          <%= dish_form.number_field :price, step: 0.01, min: 0, class: 'form-control' %>
+          <%= dish_form.hidden_field :dish_type, value: :prato_por_quilo %>
+        </div>
+      <% end %>
+    </div>
 
     <div class="col-12 d-grid gap-2">
+      <button type="button" class="add-prato-por-quilo btn btn-secondary">Adicionar Prato por Quilo</button>
       <%= form.submit "Criar Pedido", class: 'btn btn-primary' %>
     </div>
   <% end %>
 </div>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+  const pratoPorQuiloTemplate = document.querySelector('.prato-por-quilo-input');
+  const addPratoPorQuiloButton = document.querySelector('.add-prato-por-quilo');
+  const pratoPorQuiloContainer = document.querySelector('#prato-por-quilo-container');
+
+  addPratoPorQuiloButton.addEventListener('click', () => {
+    const newPratoPorQuilo = pratoPorQuiloTemplate.cloneNode(true);
+    const dishFields = newPratoPorQuilo.querySelectorAll('input');
+    let highestIndex = -1;
+
+    pratoPorQuiloContainer.querySelectorAll('input[name^="order[dishes_attributes]"]').forEach(field => {
+      const match = field.name.match(/\[(\d+)\]/);
+      if (match) {
+        const index = parseInt(match[1]);
+        highestIndex = Math.max(highestIndex, index);
+      }
+    });
+
+    dishFields.forEach(field => {
+      field.value = ''; // Clear the value for the new field
+      field.name = field.name.replace(/\[\d+\]/, `[${highestIndex + 1}]`);
+    });
+
+    pratoPorQuiloContainer.appendChild(newPratoPorQuilo);
+  });
+});
+</script>

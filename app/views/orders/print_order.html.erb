@@ -85,6 +85,22 @@
             </tr>
           <% end %>
         <% end %>
+        <% @order.dishes.each do |dish| %>
+         <tr>
+           <td>
+             <% if dish.dish_type == 'prato_por_quilo' %>
+               Prato por Quilo
+             <% elsif dish.dish_type.present? %>
+               <%= dish.dish_type.humanize %>
+             <% else %>
+               Prato por quilo
+             <% end %>
+           </td>
+           <td>1</td>
+           <td><%= number_to_currency(dish.price, unit: "R$", separator: ",", delimiter: ".") %></td>
+           <td><%= number_to_currency(dish.price, unit: "R$", separator: ",", delimiter: ".") %></td>
+         </tr>
+       <% end %>
       </tbody>
     </table>
 

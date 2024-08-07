@@ -1,5 +1,5 @@
 # Create a table
-table = Table.create(number: 5)
+table = Table.create(number: 1)
 
 # Create some menu items
 menu_items = [

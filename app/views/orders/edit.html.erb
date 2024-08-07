@@ -2,6 +2,7 @@
   <h1>Editar Pedido <%= @order.id %></h1>
 
   <%= form_with(model: @order, local: true) do |f| %>
+
     <table class="table table-striped table-hover">
       <thead>
         <tr>
@@ -22,6 +23,50 @@
         <% end %>
       </tbody>
     </table>
+
+    <div id="prato-por-quilo-container">
+      <%= f.fields_for :dishes, @order.dishes.build(dish_type: 'prato_por_quilo') do |dish_form| %>
+        <div class="input-group prato-por-quilo-input">
+          <span class="input-group-text">Prato por quilo R$</span>
+          <%= dish_form.number_field :price, step: 0.01, min: 0, class: 'form-control' %>
+          <%= dish_form.hidden_field :dish_type, value: :prato_por_quilo %>
+        </div>
+      <% end %>
+    </div>
+
+  <div class="d-grid gap-2"> <div class="d-grid gap-2">  </div> <div class="col-12">
+    <button type="button" class="add-prato-por-quilo btn btn-secondary">Adicionar Prato por Quilo</button>
     <%= f.submit "Atualizar Pedido", class: "btn btn-primary" %>
+  </div>
+</div>
   <% end %>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', (event) => {
+  const pratoPorQuiloTemplate = document.querySelector('.prato-por-quilo-input');
+  const addPratoPorQuiloButton = document.querySelector('.add-prato-por-quilo');
+  const pratoPorQuiloContainer = document.querySelector('#prato-por-quilo-container');
+
+  addPratoPorQuiloButton.addEventListener('click', () => {
+    const newPratoPorQuilo = pratoPorQuiloTemplate.cloneNode(true);
+    const dishFields = newPratoPorQuilo.querySelectorAll('input');
+    let highestIndex = -1;
+
+    pratoPorQuiloContainer.querySelectorAll('input[name^="order[dishes_attributes]"]').forEach(field => {
+      const match = field.name.match(/\[(\d+)\]/);
+      if (match) {
+        const index = parseInt(match[1]);
+        highestIndex = Math.max(highestIndex, index);
+      }
+    });
+
+    dishFields.forEach(field => {
+      field.value = ''; // Clear the value for the new field
+      field.name = field.name.replace(/\[\d+\]/, `[${highestIndex + 1}]`);
+    });
+
+    pratoPorQuiloContainer.appendChild(newPratoPorQuilo);
+  });
+});
+</script>

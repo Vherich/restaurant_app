@@ -1,6 +1,7 @@
 <div class="container mt-4">
   <h2>Pedidos para a Mesa <%= @table.number %></h2>
   <%= link_to 'Criar Pedido', new_order_path, class: 'btn btn-primary mb-3' %>
+
   <% if @current_orders.any? %>
     <h3 class="mt-4">Pedidos Atuais</h3>
     <table class="table table-striped table-hover align-middle">
@@ -17,7 +18,7 @@
       </thead>
       <tbody>
         <% @current_orders.each do |order| %>
-          <% if order.order_items.any? { |item| item.quantity > 0 } %>
+          <% if order.order_items.any?(&:present?) || order.dishes.any? %>
             <tr>
               <td><%= order.id %></td>
               <td>
@@ -25,7 +26,7 @@
                   <%= order.status.capitalize %>
                 </span>
               </td>
-              <td><%= order.respond_to?(:formatted_order_type) ? order.formatted_order_type : (order.order_type&.humanize || "Presencial") %></td>
+              <td><%= order.formatted_order_type || (order.order_type&.humanize || "Presencial") %></td>
               <td><%= order.created_at.strftime("%Y-%m-%d %H:%M") %></td>
               <td><%= number_to_currency(order.total) %></td>
               <td>
@@ -34,6 +35,17 @@
                     <% if order_item.quantity > 0 %>
                       <li><%= order_item.menu_item.name %> x <%= order_item.quantity %></li>
                     <% end %>
+                  <% end %>
+
+                  <% order.dishes.each do |dish| %>
+                    <li>
+                      <% if dish.dish_type == 'prato_por_quilo' %>
+                        Prato por Quilo
+                      <% else %>
+                        <%= dish.dish_type.humanize if dish.dish_type %>
+                      <% end %>
+                      (Prato por quilo <%= number_to_currency(dish.price, unit: "R$", separator: ",", delimiter: ".") %>)
+                    </li>
                   <% end %>
                 </ul>
               </td>
@@ -73,7 +85,7 @@
       </thead>
       <tbody>
         <% @completed_orders.each do |order| %>
-          <% if order.order_items.any? { |item| item.quantity > 0 } %>
+          <% if order.order_items.any?(&:present?) || order.dishes.any? %>
             <tr>
               <td><%= order.id %></td>
               <td>
@@ -89,6 +101,17 @@
                     <% if order_item.quantity > 0 %>
                       <li><%= order_item.menu_item.name %> x <%= order_item.quantity %></li>
                     <% end %>
+                  <% end %>
+
+                  <% order.dishes.each do |dish| %>
+                    <li>
+                      <% if dish.dish_type == 'prato_por_quilo' %>
+                        Prato por Quilo
+                      <% else %>
+                        <%= dish.dish_type.humanize if dish.dish_type %>
+                      <% end %>
+                      (Prato por quilo <%= number_to_currency(dish.price, unit: "R$", separator: ",", delimiter: ".") %>)
+                    </li>
                   <% end %>
                 </ul>
               </td>

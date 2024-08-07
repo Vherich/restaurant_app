@@ -1,5 +1,7 @@
 class Order < ApplicationRecord
   belongs_to :table
+  has_many :dishes
+  accepts_nested_attributes_for :dishes, allow_destroy: true
   has_many :order_items, inverse_of: :order, dependent: :destroy
   accepts_nested_attributes_for :order_items, allow_destroy: true, reject_if: :all_blank
   has_many :menu_items, through: :order_items
@@ -24,7 +26,7 @@ class Order < ApplicationRecord
   end
 
   def total
-    order_items.sum { |item| item.menu_item.price * item.quantity }
+    (order_items.map { |item| item.menu_item.price * item.quantity }.sum) + dishes.sum(:price)
   end
 
   def calculate_change(amount_paid)

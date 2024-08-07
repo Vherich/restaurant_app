@@ -10,9 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_05_184228) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_05_194207) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "dishes", force: :cascade do |t|
+    t.bigint "menu_item_id", null: false
+    t.decimal "price", precision: 10, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_dishes_on_order_id"
+  end
 
   create_table "menu_items", force: :cascade do |t|
     t.string "name"
@@ -21,6 +29,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_05_184228) do
     t.boolean "availability"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "prato_por_quilo"
   end
 
   create_table "order_items", force: :cascade do |t|
@@ -67,6 +76,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_05_184228) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "dishes", "orders"
   add_foreign_key "order_items", "menu_items"
   add_foreign_key "order_items", "orders"
   add_foreign_key "orders", "tables"

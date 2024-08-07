@@ -22,7 +22,7 @@
           </thead>
           <tbody>
             <% @current_orders.each do |order| %>
-              <% if order.order_items.any? { |item| item.quantity > 0 } %>
+              <% if (order.order_items.any? { |item| item.quantity > 0 }) || order.dishes.any? %> <%# Update this line %>
                 <tr>
                   <td><%= order.id %></td>
                   <td><%= order.table&.number || "N/A" %></td> <%# Gracefully handle missing table %>
@@ -41,6 +41,10 @@
                         <% if order_item.quantity > 0 %>
                           <li><%= order_item.menu_item.name %> x <%= order_item.quantity %></li>
                         <% end %>
+                      <% end %>
+
+                      <% order.dishes.each do |dish| %>
+                        <li>(Prato por quilo) (R$ <%= dish.price.to_f %>)</li>
                       <% end %>
                     </ul>
                   </td>
@@ -95,7 +99,7 @@
           </thead>
           <tbody>
             <% @completed_orders.each do |order| %>
-              <% if order.order_items.any? { |item| item.quantity > 0 } %>
+              <% if (order.order_items.any? { |item| item.quantity > 0 }) || order.dishes.any? %> <%# Update this line %>
                 <tr>
                   <td><%= order.id %></td>
                   <td><%= order.table&.number || "N/A" %></td> <%# Gracefully handle missing table %>
@@ -103,7 +107,7 @@
                     <span class="badge bg-<%= order.status_badge_class %>">
                       <%= order.status.capitalize %>
                     </span>
-                  </td>
+                  "</td>
                   <td><%= order.updated_at.strftime("%Y-%m-%d %H:%M") %></td>
                   <td><%= number_to_currency(order.total) %></td>
                   <td><%= order.observations %></td> <%# Display observations %>
@@ -114,7 +118,12 @@
                           <li><%= order_item.menu_item.name %> x <%= order_item.quantity %></li>
                         <% end %>
                       <% end %>
+
+                      <% order.dishes.each do |dish| %>
+                        <li> ("Prato por quilo") (R$ <%= dish.price.to_f %>)</li>
+                      <% end %>
                     </ul>
+                  </td>
                   </td>
                   <td>
                     <%= link_to 'Editar Pedido', edit_order_path(order), class: 'btn btn-secondary btn-sm my-2' %>

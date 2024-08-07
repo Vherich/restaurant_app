@@ -1,24 +1,23 @@
 class OrdersController < ApplicationController
   before_action :set_table, only: [:edit]
-  before_action :set_order, only: %i[update destroy edit] # Move set_order after set_table
-  before_action :set_tables, only: %i[new create]
+  before_action :set_order, only: %i[update destroy edit show print_order]
+  before_action :set_tables_and_menu_items, only: %i[new create edit]
 
   def index
     if params[:table_id]
-      @table = Table.find(params[:table_id]) # Get the table for filtering
-      @current_orders = @table.orders.where.not(status: 'completed')
-      @completed_orders = @table.orders.where(status: 'completed')
+      @table = Table.find(params[:table_id])
+      @current_orders = @table.orders.includes(:dishes).where.not(status: 'completed')
+      @completed_orders = @table.orders.includes(:dishes).where(status: 'completed')
     else
-      @current_orders = Order.where.not(status: 'completed')
-      @completed_orders = Order.where(status: 'completed')
+      @current_orders = Order.includes(:dishes).where.not(status: 'completed')
+      @completed_orders = Order.includes(:dishes).where(status: 'completed')
     end
   end
 
   def new
     @order = Order.new
     @order.order_type = :presencial if @order.order_type.nil?
-    @menu_items = MenuItem.where(availability: true)
-    @tables = Table.all
+    @order.dishes.build(dish_type: :prato_por_quilo) # Initialize one by default
   end
 
   def edit
@@ -27,19 +26,16 @@ class OrdersController < ApplicationController
     @menu_items = MenuItem.where(availability: true).order(:name)
   end
 
+  def show
+  end
+
   def create
     @order = Order.new(order_params)
     if @order.save
-      Order.transaction do # Wrap in transaction
-        valid_order_items_attributes = order_params[:order_items_attributes].select { |_, item| item[:quantity].to_i > 0 }
-        valid_order_items_attributes.each do |_, item_params|
-          @order.order_items.build(item_params.permit(:menu_item_id, :quantity))
-        end
-      end
+      create_prato_por_quilo_dish
+      create_order_items
       redirect_to orders_path, notice: 'Order was successfully created.'
     else
-      @menu_items = MenuItem.where(availability: true)
-      @tables = Table.all
       render :new, status: :unprocessable_entity
     end
   end
@@ -62,22 +58,10 @@ class OrdersController < ApplicationController
 
   def update
     if @order.update(order_params)
-      if params[:order][:status] == "completed"
-        if params[:order][:amount_paid].present?
-          @change = @order.calculate_change(params[:order][:amount_paid].to_f)
-          flash[:notice] = "Pedido completado! Troco: #{@change}"
-        else
-          flash[:alert] = "Por favor, insira a quantia paga para calcular o troco."
-          return redirect_to edit_order_path(@order)
-        end
-      else
-        flash[:notice] = "Pedido atualizado com sucesso!"
-      end
+      handle_order_completion
     else
       render :edit
     end
-    # redirect logic simplified
-    redirect_to params[:order][:table_id].present? ? table_orders_path(@order.table_id) : orders_path
   end
 
   def destroy
@@ -101,10 +85,12 @@ class OrdersController < ApplicationController
   end
 
   def set_table
-    @order = Order.find(params[:id]) # Set @order before trying to use it
-    @table = @order.table
-  rescue ActiveRecord::RecordNotFound
-    redirect_to orders_path, alert: 'Order not found.'
+    @order = Order.find(params[:id])
+  end
+
+  def set_tables_and_menu_items
+    @tables = Table.all
+    @menu_items = MenuItem.where(availability: true).order(:name)
   end
 
   def order_params
@@ -114,7 +100,37 @@ class OrdersController < ApplicationController
       :order_type,
       :amount_paid,
       :observations,
+      dishes_attributes: [:id, :price, :menu_item_id, :_destroy], # Add menu_item_id
       order_items_attributes: [:id, :quantity, :menu_item_id, :_destroy]
     )
+  end
+
+  def create_prato_por_quilo_dish
+    if params[:prato_por_quilo_price].present? && params[:prato_por_quilo_price].to_f > 0
+      @order.dishes.create(price: params[:prato_por_quilo_price], dish_type: :prato_por_quilo)
+    end
+  end
+
+  def create_order_items
+    valid_order_items_attributes = order_params[:order_items_attributes].select { |_, item| item[:quantity].to_i > 0 }
+    valid_order_items_attributes.each do |_, item_params|
+      @order.order_items.build(item_params.permit(:menu_item_id, :quantity))
+    end
+  end
+
+  def handle_order_completion
+    if params[:order][:status] == "completed"
+      if params[:order][:amount_paid].present?
+        @change = @order.calculate_change(params[:order][:amount_paid].to_f)
+        flash[:notice] = "Pedido completado! Troco: #{@change}"
+      else
+        flash[:alert] = "Por favor, insira a quantia paga para calcular o troco."
+        return redirect_to edit_order_path(@order)
+      end
+    else
+      flash[:notice] = "Pedido atualizado com sucesso!"
+    end
+
+    redirect_to params[:order][:table_id].present? ? table_orders_path(@order.table_id) : orders_path
   end
 end
