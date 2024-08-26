@@ -12,6 +12,32 @@ class OrdersController < ApplicationController
       @current_orders = Order.includes(:dishes).where.not(status: 'completed')
       @completed_orders = Order.includes(:dishes).where(status: 'completed')
     end
+
+    if params[:order_id].present?
+      begin
+        @order = Order.find(params[:order_id])
+      rescue ActiveRecord::RecordNotFound
+        # Handle the case where the order is not found
+        respond_to do |format|
+          format.html {
+            flash[:alert] = "Order not found."
+            redirect_to orders_path
+          }
+          format.js {
+            render js: "alert('Order not found.'); $('#customerDetailsModal').modal('hide');"
+          }
+        end
+        return # Stop further processing if the order is not found
+      end
+    end
+
+    respond_to do |format|
+      format.html # Render the normal index view
+      format.js {
+        # Render the modal partial if the request is an AJAX request
+        render partial: 'customer_details_modal', locals: { order: @order }
+      }
+    end
   end
 
   def new
@@ -27,6 +53,11 @@ class OrdersController < ApplicationController
   end
 
   def show
+    @order = Order.find(params[:id])
+
+    respond_to do |format|
+      format.js { render partial: 'customer_details_modal', locals: { order: @order }, layout: false }
+    end
   end
 
   def create
@@ -69,6 +100,21 @@ class OrdersController < ApplicationController
       redirect_to orders_path, notice: 'Order deleted successfully.'
     else
       redirect_to orders_path, alert: 'Order could not be deleted.'
+    end
+  end
+
+  def invoice
+    @order = Order.find(params[:id])
+    @customer_name = params[:customer_name]
+    @customer_cpf = params[:customer_cpf]
+
+    # Fetch additional data if needed, such as:
+    # - Customer information (if not directly associated with the order)
+    # - Any tax or discount calculations
+    # - ...
+
+    respond_to do |format|
+      format.js { render partial: 'customer_details_modal', locals: { order: @order } } # Render the modal partial
     end
   end
 
