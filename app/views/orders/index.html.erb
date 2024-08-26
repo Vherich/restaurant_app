@@ -22,7 +22,7 @@
           </thead>
           <tbody>
             <% @current_orders.each do |order| %>
-              <% if (order.order_items.any? { |item| item.quantity > 0 }) || order.dishes.any? %> <%# Update this line %>
+              <% if (order.order_items&.any? { |item| item&.quantity&.> 0 }) || order.dishes.any? %>
                 <tr>
                   <td><%= order.id %></td>
                   <td><%= order.table&.number || "N/A" %></td> <%# Gracefully handle missing table %>
@@ -99,7 +99,7 @@
           </thead>
           <tbody>
             <% @completed_orders.each do |order| %>
-              <% if (order.order_items.any? { |item| item.quantity > 0 }) || order.dishes.any? %> <%# Update this line %>
+              <% if (order.order_items&.any? { |item| item&.quantity&.> 0 }) || order.dishes.any? %>
                 <tr>
                   <td><%= order.id %></td>
                   <td><%= order.table&.number || "N/A" %></td> <%# Gracefully handle missing table %>
