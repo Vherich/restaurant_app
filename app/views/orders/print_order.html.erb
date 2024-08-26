@@ -59,17 +59,6 @@
 </head>
 <body onload="window.print()">
   <div class="container">
-    <div class="header">
-      <h1>Nota Fiscal</h1>
-      <p>CNPJ: 36.245.378/0001-00</p>
-      <p>Endereço: R. Antônio Losso, 737 - São Cristóvão, Guarapuava - PR, 85060260</p>
-    </div>
-    <div class="details">
-      <p><strong>Dados do Cliente:</strong></p>
-      <p>Nome: ____________________________________________</p>
-      <p>CPF: ____________________________________________ </p>
-      <%# Add payment method if available %>
-    </div>
     <h1>Pedido #<%= @order.id %></h1>
     <div class="order-info">
       <p>Mesa: <%= @order.table.number %></p>

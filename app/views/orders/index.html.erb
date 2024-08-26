@@ -1,59 +1,3 @@
-<script>
-  document.addEventListener("turbolinks:load", function () {
-  // Handle changeModal
-  const changeModal = document.getElementById("changeModal");
-  if (changeModal) {
-    const amountPaidInput = document.getElementById("amountPaid");
-    const changeResult = document.getElementById("changeResult");
-    const confirmPaymentButton = document.getElementById("confirmPayment");
-
-    let currentOrder = null;
-
-    changeModal.addEventListener("shown.bs.modal", function (event) {
-      const button = event.relatedTarget;
-      const orderTotal = parseFloat(button.dataset.orderTotal);
-      currentOrder = button;
-
-      amountPaidInput.min = orderTotal;
-
-      amountPaidInput.addEventListener("input", function () {
-        const amountPaid = parseFloat(this.value) || 0;
-        const change = amountPaid - orderTotal;
-
-        changeResult.textContent =
-          change >= 0
-            ? `Troco: ${change.toFixed(2)}`
-            : "A quantia paga é menor que o total do pedido.";
-      });
-    });
-
-    confirmPaymentButton.addEventListener("click", function () {
-      const amountPaid = parseFloat(amountPaidInput.value);
-      const orderTotal = parseFloat(currentOrder.dataset.orderTotal);
-
-      if (amountPaid >= orderTotal) {
-        const form = document.querySelector(
-          `form[data-order-id="${currentOrder.dataset.orderId}"]`
-        );
-        const amountPaidInput = form.querySelector(
-          'input[name="order[amount_paid]"]'
-        );
-        const statusInput = form.querySelector('input[name="order[status]"]');
-
-        amountPaidInput.value = amountPaid;
-        statusInput.value = "completed";
-
-        form.submit();
-      } else {
-        changeResult.textContent =
-          "A quantia paga é menor que o total do pedido.";
-      }
-    });
-  }
-});
-</script>
-
-
 <div class="container mt-4">
   <%# Current Orders Section %>
   <section id="current-orders">
@@ -205,12 +149,12 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Calcular
+        <h5 class="modal-title">Calcular  
  Troco</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <div class="mb-3">
+        <div class="mb-3">  
 
           <label for="amountPaid" class="form-label">Quantia Paga:</label>
           <input type="number" step="0.01" min="0" id="amountPaid" class="form-control" />
@@ -219,39 +163,57 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-        <button type="button"
+        <button type="button"  
  id="confirmPayment" class="btn btn-primary">Confirmar Pagamento</button>
       </div>
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="customerDetailsModal" tabindex="-1" aria-labelledby="customerDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="customerDetailsModalLabel">Dados do Cliente</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <%= form_with(model: @order || Order.new, # Provide a new Order object if @order is nil
-                              url: '#', # The JavaScript will update this action
-                              method: :post,
-                              local: true) do |form| %>
-                    <div class="mb-3">
-                        <%= form.label :customer_name, "Nome do Cliente" %>
-                        <%= form.text_field :customer_name, class: "form-control", required: true %>
-                    </div>
-                    <div class="mb-3">
-                        <%= form.label :customer_cpf, "CPF do Cliente" %>
-                        <%= form.text_field :customer_cpf, class: "form-control", required: true %>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                        <%= form.submit "Ver Nota Fiscal", class: "btn btn-primary" %>
-                    </div>
-                <% end %>
-            </div>
-        </div>
-    </div>
-</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const changeModal = document.getElementById("changeModal");
+    const amountPaidInput = document.getElementById("amountPaid");
+    const changeResult = document.getElementById("changeResult");
+    const confirmPaymentButton  
+ = document.getElementById("confirmPayment");
+
+    let currentOrder = null; // Variable to store the current order
+
+    changeModal.addEventListener("shown.bs.modal", function (event) {
+      const button = event.relatedTarget;
+      const orderTotal = parseFloat(button.dataset.orderTotal);
+      currentOrder = button; // Store the button element itself
+
+      amountPaidInput.min = orderTotal; // Set minimum amount
+
+      amountPaidInput.addEventListener("input", function () {
+        const amountPaid = parseFloat(this.value) || 0;
+        const change = amountPaid - orderTotal;
+
+        changeResult.textContent = change >= 0
+          ? `Troco: ${change.toFixed(2)}`
+          : "A quantia paga é menor que o total do pedido.";
+      });
+    });
+
+    confirmPaymentButton.addEventListener("click", function () {
+      const amountPaid = parseFloat(amountPaidInput.value);
+      const orderTotal = parseFloat(currentOrder.dataset.orderTotal); // Fetch order total from the button element
+
+      if (amountPaid >= orderTotal) {
+        // Submit the form using a regular form submission
+        const form = document.querySelector(`form[data-order-id="${currentOrder.dataset.orderId}"]`);
+        const amountPaidInput = form.querySelector('input[name="order[amount_paid]"]');
+        const statusInput = form.querySelector('input[name="order[status]"]');
+
+        amountPaidInput.value = amountPaid;
+        statusInput.value = 'completed';
+
+        form.submit();
+      } else {
+        changeResult.textContent = "A quantia paga é menor que o total do pedido.";
+      }
+    });
+  });
+</script>

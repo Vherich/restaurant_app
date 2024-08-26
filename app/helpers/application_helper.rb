@@ -14,9 +14,3 @@ module ApplicationHelper
     end
   end
 end
-
-module ApplicationHelper
-  def my_invoice_order_path(order)
-    "/orders/#{order.id}/invoice"
-  end
-end

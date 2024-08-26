@@ -23,15 +23,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :orders do
-    member do
-      get 'invoice', to: 'orders#invoice', as: 'invoice_order' # or match the action name you used
-      post 'invoice', to: 'orders#invoice'
-    end
-  end
-
   get '/login', to: 'sessions#new', as: 'new_session'
   post '/login', to: 'sessions#create', as: 'sessions'
   root 'orders#index'
-  get '/orders', to: 'orders#index'
 end
