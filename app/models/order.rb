@@ -26,7 +26,7 @@ class Order < ApplicationRecord
   end
 
   def total
-    (order_items.map { |item| item.menu_item.price * item.quantity }.sum) + dishes.sum(:price)
+    (order_items.map { |item| item.menu_item&.price && item.quantity ? item.menu_item.price * item.quantity : 0 }.sum) + dishes.sum(:price)
   end
 
   def calculate_change(amount_paid)
